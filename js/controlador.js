@@ -1,6 +1,37 @@
 
-function ocultar() {
+var ordenes = [
+    {
+        codigo: 1,
+        nombreCliente: 'Juan',
+        descripcion: 'Lorem ipsum dolor sit amet consectetur adipisicing.',
+        direccion: 'Lorem, ipsum dolor.',
+        cantidad: 1,
+        total: 199,
+        estado: 'En el destino'
+    },
+    {
+        codigo: 2,
+        nombreCliente: 'Maria',
+        descripcion: 'Lorem ipsum dolor sit amet consectetur adipisicing.',
+        direccion: 'Lorem, ipsum dolor.',
+        cantidad: 1,
+        total: 199,
+        estado: 'En camino'
+    },
+    {
+        codigo: 3,
+        nombreCliente: 'Alejandra',
+        descripcion: 'Lorem ipsum dolor sit amet consectetur adipisicing.',
+        direccion: 'Lorem, ipsum dolor.',
+        cantidad: 1,
+        total: 199,
+        estado: 'En el origen'
+    }
+]
+
+function entrar() {
     document.getElementById("paginaPrincipalMotoristas").style.display = "none";
+    document.getElementById('tipoDeOrdenes').style.display = 'block';
 }
 
 function validarCampoInicio() {
@@ -26,7 +57,7 @@ function validarCampoInicio() {
 }
 
 function validarCampoRegistro() {
-    
+
     const nombre = document.getElementById('nombreMotorista');
     const apellido = document.getElementById('apellidoMotorista');
     const usuario = document.getElementById('usuarioRegistroMotorista');
@@ -70,6 +101,169 @@ function inicioSesion() {
 function esperarAprobacion() {
     document.getElementById('paginaRegistroMotoristas').style.display = 'none';
     document.getElementById('esperaAprobacion').style.display = 'block';
+}
+
+function verDisponibles() {
+    document.getElementById('tipoDeOrdenes').style.display = 'none';
+    document.getElementById('ordenesDisponibles').style.display = 'block';
+    const disponibles = document.getElementById('disponibles');
+    disponibles.innerHTML = '';
+
+    ordenes.forEach((orden, indice) => {
+        disponibles.innerHTML += 
+        `
+        <div class="tamano-opcion mt-4 border border-3 rounded-4 p-4 borde-color-primario" onclick="verOrden(${indice})">
+            <h3 class="texto-mediano">Orden ${orden.codigo}</h3>
+            <p>${orden.descripcion}</p>
+            <p>${orden.direccion}</p>
+        </div>
+        `
+    })
+}
+
+function verOrden(indice) {
+    document.getElementById('ordenesDisponibles').style.display = 'none';
+    document.getElementById('verOrden').style.display = 'block';
+    const orden = ordenes[indice]
+
+    document.getElementById('orden').innerHTML = 
+    `
+    <h1 class="text-center texto-grande">Orden ${orden.codigo}</h1>
+    <h3 class="texto-mediano mt-5">${orden.nombreCliente}</h3>
+    <p class="mt-4 fs-5"><strong>Descripcion: </strong>${orden.descripcion}</p>
+    <p class="fs-5"><strong>Direccion: </strong>${orden.direccion}</p>
+    <p class="fs-5"><strong>Cantidad: </strong>${orden.cantidad}</p>
+    <p class="fs-5"><strong>Total: </strong>lps. ${orden.total}</p>
+    `
+}
+
+function verTomadas() {
+    document.getElementById('tipoDeOrdenes').style.display = 'none';
+    document.getElementById('ordenesTomadas').style.display = 'block';
+    const tomadas = document.getElementById('tomadas')
+    tomadas.innerHTML = '';
+
+    ordenes.forEach((orden, indice) => {
+        tomadas.innerHTML += 
+        `
+        <div class="tamano-opcion mt-4 border border-3 rounded-4 p-2 borde-color-primario" onclick="verOrdenTomada(${indice})">
+            <h3 class="texto-mediano">Orden ${orden.codigo}</h3>
+            <p>${orden.descripcion}</p>
+            <p>${orden.direccion}</p>
+            <p>Estado: ${orden.estado}</p>
+        </div>
+        `
+    })
+}
+
+function verOrdenTomada(indice) {
+    document.getElementById('ordenesTomadas').style.display = 'none';
+    document.getElementById('verOrdenTomada').style.display = 'block';
+    const orden = ordenes[indice]
+
+    document.getElementById('ordenTomada').innerHTML = 
+    `
+    <h1 class="text-center texto-grande">Orden ${orden.codigo}</h1>
+    <h3 class="texto-mediano mt-5">${orden.nombreCliente}</h3>
+    <p class="mt-4 fs-5"><strong>Descripcion: </strong>${orden.descripcion}</p>
+    <p class="fs-5"><strong>Direccion: </strong>${orden.direccion}</p>
+    <p class="fs-5"><strong>Cantidad: </strong>${orden.cantidad}</p>
+    <p class="fs-5"><strong>Total: </strong>lps. ${orden.total}</p>
+    `
+
+    establecerEstado('estado', orden.estado);
+}
+
+function establecerEstado(nombre, estado) {
+    const radios = document.querySelectorAll(`input[name=${nombre}]`)
+
+    switch (estado) {
+        case 'Tomada':
+            radios[0].checked = true;
+            break;
+    
+        case 'En camino':
+            radios[1].checked = true;
+            break;
+        
+        case 'En el origen':
+            radios[2].checked = true;
+            break;
+
+        case 'En el destino':
+            radios[3].checked = true;
+            break;
+
+        default:
+            console.log('No valido')
+            break;
+    }
+}
+
+function regresarAPrincipal() {
+    document.getElementById('ordenesDisponibles').style.display = 'none';
+    document.getElementById('ordenesTomadas').style.display = 'none';
+    document.getElementById('ordenesEntregadas').style.display = 'none';
+    document.getElementById('tipoDeOrdenes').style.display = 'block';
+}
+
+function regresarADisponibles() {
+    document.getElementById('ordenesDisponibles').style.display = 'block';
+    document.getElementById('verOrden').style.display = 'none';
+}
+
+function regresarATomadas() {
+    document.getElementById('ordenesTomadas').style.display = 'block';
+    document.getElementById('verOrdenTomada').style.display = 'none';
+}
+
+function regresarAOrdenTomada() {
+    document.getElementById('verOrdenTomada').style.display = 'block';
+    document.getElementById('factura').style.display = 'none';
+}
+
+function verFacturaTomada() {
+    document.getElementById('verOrdenTomada').style.display = 'none';
+    document.getElementById('factura').style.display = 'block';
+}
+
+function verEntregadas() {
+    document.getElementById('tipoDeOrdenes').style.display = 'none';
+    document.getElementById('ordenesEntregadas').style.display = 'block';
+    const entregadas = document.getElementById('entregadas');
+    entregadas.innerHTML = '';
+
+    ordenes.forEach((orden, indice) => {
+        entregadas.innerHTML += 
+        `
+        <div class="tamano-opcion mt-4 border border-3 rounded-4 p-4 borde-color-primario" onclick="verOrdenEntregada(${indice})">
+            <h3 class="texto-mediano">Orden ${orden.codigo}</h3>
+            <p>${orden.descripcion}</p>
+            <p>${orden.direccion}</p>
+        </div>
+        `
+    })
+}
+
+function verOrdenEntregada(indice) {
+    document.getElementById('ordenesEntregadas').style.display = 'none';
+    document.getElementById('verOrdenEntregada').style.display = 'block';
+    const orden = ordenes[indice]
+
+    document.getElementById('ordenEntregada').innerHTML = 
+    `
+    <h1 class="text-center texto-grande">Orden ${orden.codigo}</h1>
+    <h3 class="texto-mediano mt-5">${orden.nombreCliente}</h3>
+    <p class="mt-4 fs-5"><strong>Descripcion: </strong>${orden.descripcion}</p>
+    <p class="fs-5"><strong>Direccion: </strong>${orden.direccion}</p>
+    <p class="fs-5"><strong>Cantidad: </strong>${orden.cantidad}</p>
+    <p class="fs-5"><strong>Total: </strong>lps. ${orden.total}</p>
+    `
+}
+
+function regresarAEntregadas() {
+    document.getElementById('ordenesEntregadas').style.display = 'block';
+    document.getElementById('verOrdenEntregada').style.display = 'none';
 }
 
 // Example starter JavaScript for disabling form submissions if there are invalid fields

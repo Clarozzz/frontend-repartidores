@@ -56,8 +56,8 @@
             </div>
 
             <div class="col-12 text-center">
-                <button id="btnSubmit" type="submit" class="btn-grande color-secundario-fondo color-texto-blanco mt-4"
-                    disabled onclick="ocultar()">Iniciar sesion</button>
+                <button id="btnSubmit" type="button" class="btn-grande color-secundario-fondo color-texto-blanco mt-4"
+                    disabled onclick="entrar()">Iniciar sesion</button>
             </div>
         </form>
 
@@ -69,7 +69,7 @@
     <main id="paginaRegistroMotoristas" class="mt-5" style="display: none;">
         <h1 class="text-center texto-grande">Registrarse</h1>
 
-        <form id="formInicioSesion" class="g-3 needs-validation m-4" novalidate>
+        <form id="formRegistro" class="g-3 needs-validation m-4" novalidate>
             <div class="d-flex flex-column align-items-center">
                 <div class="col-md-4">
                     <label for="nombreMotorista" class="form-label texto-pequeno">Nombre:</label>
@@ -121,7 +121,7 @@
             </div>
 
             <div class="col-12 text-center">
-                <button id="btnSubmitRegistro" type="submit"
+                <button id="btnSubmitRegistro" type="button"
                     class="btn-grande color-secundario-fondo color-texto-blanco mt-4" disabled
                     onclick="esperarAprobacion()">Registrarse</button>
             </div>
@@ -138,10 +138,166 @@
             <h3 class="text-center texto-mediano mt-4 px-3">Debes esperar a que un administrador te apruebe para iniciar
             </h3>
             <div class="text-center">
-                <button class="btn-grande color-secundario-fondo color-texto-blanco mt-4" onclick="location.reload()">Volver al inicio</button>
+                <button class="btn-grande color-secundario-fondo color-texto-blanco mt-4"
+                    onclick="location.reload()">Volver al inicio</button>
             </div>
         </div>
 
+    </main>
+
+    <main id="tipoDeOrdenes" class="mt-5" style="display: none;">
+        <div class="d-flex flex-column align-items-center">
+            <div class="tamano-opcion borde-color-verde mt-4 border border-4 rounded-4 p-3 text-center"
+                onclick="verDisponibles()">
+                <h1 class="texto-mediano my-4">Ordenes Disponibles</h1>
+                <i class="fa-solid fa-magnifying-glass texto-grande"></i>
+            </div>
+            <div class="tamano-opcion borde-color-primario mt-4 border border-4 rounded-4 p-3 text-center"
+                onclick="verTomadas()">
+                <h1 class="texto-mediano my-4">Ordenes Tomadas</h1>
+                <i class="fa-solid fa-truck-fast texto-grande"></i>
+            </div>
+            <div class="tamano-opcion borde-color-secundario my-4 border border-4 rounded-4 p-3 text-center"
+                onclick="verEntregadas()">
+                <h1 class="texto-mediano my-4">Ordenes Entregadas</h1>
+                <i class="fa-solid fa-check texto-grande"></i>
+            </div>
+        </div>
+    </main>
+
+    <main id="ordenesDisponibles" class="my-4" style="display: none;">
+        <i role="button" class="fa-solid fa-arrow-left ms-4 texto-mediano" onclick="regresarAPrincipal()"></i>
+        <h1 class="text-center texto-grande">Ordenes disponibles</h1>
+
+        <div id="disponibles" class="d-flex flex-column align-items-center">
+
+        </div>
+    </main>
+
+    <main id="verOrden" class="my-4" style="display: none;">
+        <i role="button" class="fa-solid fa-arrow-left ms-4 texto-mediano" onclick="regresarADisponibles()"></i>
+
+        <div id="orden" class="px-4">
+
+        </div>
+
+        <div class="text-center my-5">
+            <button class="btn-grande color-secundario-fondo color-texto-blanco">
+                Tomar orden
+            </button>
+        </div>
+    </main>
+
+    <main id="ordenesTomadas" class="my-4" style="display: none;">
+        <i role="button" class="fa-solid fa-arrow-left ms-4 texto-mediano" onclick="regresarAPrincipal()"></i>
+        <h1 class="text-center texto-grande px-2">Ordenes tomadas</h1>
+
+        <div id="tomadas" class="d-flex flex-column align-items-center">
+
+        </div>
+    </main>
+
+    <main id="verOrdenTomada" class="my-4" style="display: none;">
+        <i role="button" class="fa-solid fa-arrow-left ms-4 texto-mediano" onclick="regresarATomadas()"></i>
+
+        <div id="ordenTomada" class="px-4">
+
+        </div>
+
+        <div id="estadoOrden" class="px-4">
+            <p class="fs-5"><strong>Estado:</strong></p>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="estado" id="estado1">
+                <label class="form-check-label" for="estado1">
+                    Tomada
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="estado" id="estado2">
+                <label class="form-check-label" for="estado2">
+                    En camino
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="estado" id="estado3">
+                <label class="form-check-label" for="estado3">
+                    En el origen
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="estado" id="estado4">
+                <label class="form-check-label" for="estado4">
+                    En el destino
+                </label>
+            </div>
+        </div>
+
+        <div class="text-center my-4">
+            <button class="btn-grande color-secundario-fondo color-texto-blanco" onclick="verFacturaTomada()">
+                Entregar orden
+            </button>
+        </div>
+    </main>
+
+    <main id="factura" class="my-4" style="display: none;">
+        <i role="button" class="fa-solid fa-arrow-left ms-4 texto-mediano" onclick="regresarAOrdenTomada()"></i>
+        <h1 class="text-center texto-grande">Factura</h1>
+
+        <div class="px-4">
+            <div class="fs-5 mt-4">
+                <strong>Tipo de pago: </strong>
+                <p class="float-end m-0">pago con tarjeta</p>
+            </div>
+
+            <div class="fs-5 mt-3">
+                <strong>Subtotal: </strong>
+                <p class="float-end m-0">lps. 145</p>
+            </div>
+
+            <div class="fs-5 mt-3">
+                <strong>Impuesto: </strong>
+                <p class="float-end m-0">lps. 30</p>
+            </div>
+
+            <div class="fs-5 mt-3">
+                <strong>Comision total: </strong>
+                <p class="float-end m-0">lps. 24</p>
+            </div>
+
+            <div class="fs-5 mt-3">
+                <strong>Comision motorista: </strong>
+                <p class="float-end m-0">lps. 10</p>
+            </div>
+
+            <div class="fs-5 mt-3">
+                <strong>Comision administracion: </strong>
+                <p class="float-end m-0">lps. 14</p>
+            </div>
+
+            <div class="fs-1 mt-5">
+                <strong>Total: </strong>
+                <p class="float-end m-0">lps. 199</p>
+            </div>
+        </div>
+    </main>
+
+    <main id="ordenesEntregadas" class="my-4" style="display: none;">
+        <i role="button" class="fa-solid fa-arrow-left ms-4 texto-mediano" onclick="regresarAPrincipal()"></i>
+        <h1 class="text-center texto-grande">Ordenes entregadas</h1>
+
+        <div id="entregadas" class="d-flex flex-column align-items-center">
+
+        </div>
+    </main>
+
+    <main id="verOrdenEntregada" class="my-4" style="display: none;">
+        <i role="button" class="fa-solid fa-arrow-left ms-4 texto-mediano" onclick="regresarAEntregadas()"></i>
+
+        <div id="ordenEntregada" class="px-4">
+
+        </div>
+
+        <h1 class="text-center texto-grande mt-5 color-verde-texto">Entregada</h1>
     </main>
 
     <script src="js/controlador.js"></script>
