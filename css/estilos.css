@@ -1,0 +1,110 @@
+body {
+    font-family: rubik;
+}
+
+nav {
+    background-color: #FFAF54;
+    color: white;
+    border-bottom-right-radius: 15px;
+    border-bottom-left-radius: 15px;
+}
+
+form input:focus {
+    background-color: #D9D9D9!important;
+    outline-width: 0;
+    box-shadow: none!important;
+}
+
+.cuerpo {
+    height: 80vh;
+    display: grid;
+    align-content: center;
+}
+
+.input-success {
+    border: 2px solid green!important;
+}
+
+.input-error {
+    border: 2px solid red!important;
+}
+
+.color-inputs {
+    background-color: #D9D9D9;
+}
+
+.tamano-opcion {
+    width: 342px;
+    height: 192px;
+}
+
+.btn-grande {
+    border: 0;
+    border-radius: 15px;
+    width: 300px;
+    height: 65px;
+    font-size: 25px;
+}
+
+.btn-mediano {
+    border: 0;
+    border-radius: 10px;
+    width: 200px;
+    height: 45px;
+    font-size: 20px;
+}
+
+.btn-pequeno {
+    border: 0;
+    border-radius: 5px;
+    width: 30px;
+    height: 30px;
+}
+
+.borde-color-primario {
+    border-color: #FFAF54!important;
+}
+
+.borde-color-secundario {
+    border-color: #DE5849!important;
+}
+
+.color-secundario-texto {
+    color: #DE5849!important;
+}
+
+
+.color-principal-fondo {
+    background-color: #FFAF54!important;
+}
+
+.color-secundario-fondo {
+    background-color: #DE5849!important;
+}
+
+.color-texto-blanco {
+    color: white;
+}
+
+.texto-grande {
+    font-size: 45px;
+    font-weight: 900;
+}
+
+.texto-mediano {
+    font-size: 25px;
+    font-weight: 600;
+}
+
+.texto-pequeno {
+    font-size: 20px;
+    font-weight: 100;
+}
+
+.imagen {
+    display: block;
+    border-top-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+    width: 100%;
+    height: 100%;
+}

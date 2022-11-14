@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meteoro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="img/LogoCuadrado.png">
+    <script src="https://kit.fontawesome.com/1bdf71b464.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+
+<body>
+
+    <nav id="navbar-inicio" class="navbar sticky-top">
+        <div class="container justify-content-center">
+            <div class="d-flex">
+                <img src="img/LogoCuadrado.png" alt="Logo" height="55" class="d-inline-block align-text-top">
+                <h1 id="encabezado-navbar" class="m-0 align-self-center">METEORO</h1>
+            </div>
+        </div>
+    </nav>
+
+    <main id="paginaPrincipalMotoristas" class="mt-5">
+        <h1 class="text-center texto-grande">Motoristas</h1>
+        <h3 class="text-center texto-mediano mt-4">Iniciar sesion</h3>
+
+        <form id="formInicioSesion" class="g-3 needs-validation m-4" novalidate>
+            <div class="d-flex flex-column align-items-center">
+                <div class="col-md-4">
+                    <label for="usuarioMotorista" class="form-label texto-pequeno">Usuario:</label>
+                    <input type="text" class="form-control form-control-lg color-inputs" id="usuarioMotorista" required
+                        onkeyup="validarCampoInicio()">
+                    <div class="valid-feedback">
+                        Completado!
+                    </div>
+                    <div class="invalid-feedback">
+                        Ingrese su usuario!
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label for="contrasenaMotorista" class="form-label texto-pequeno">Contrasena:</label>
+                    <input type="password" class="form-control form-control-lg color-inputs mb-3"
+                        id="contrasenaMotorista" required onkeyup="validarCampoInicio()">
+                    <div class="valid-feedback">
+                        Completado!
+                    </div>
+                    <div class="invalid-feedback">
+                        Ingrese su contrasena!
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 text-center">
+                <button id="btnSubmit" type="submit" class="btn-grande color-secundario-fondo color-texto-blanco mt-4"
+                    disabled onclick="ocultar()">Iniciar sesion</button>
+            </div>
+        </form>
+
+        <p class="text-center fs-5 px-5 mt-5">¿No tienes una cuenta? <span role="button" class="color-secundario-texto"
+                onclick="abrirRegistro()">Registrate</span></p>
+
+    </main>
+
+    <main id="paginaRegistroMotoristas" class="mt-5" style="display: none;">
+        <h1 class="text-center texto-grande">Registrarse</h1>
+
+        <form id="formInicioSesion" class="g-3 needs-validation m-4" novalidate>
+            <div class="d-flex flex-column align-items-center">
+                <div class="col-md-4">
+                    <label for="nombreMotorista" class="form-label texto-pequeno">Nombre:</label>
+                    <input type="text" class="form-control form-control-lg color-inputs mb-3" id="nombreMotorista"
+                        required onkeyup="validarCampoRegistro()">
+                    <div class="valid-feedback">
+                        Completado!
+                    </div>
+                    <div class="invalid-feedback">
+                        Ingrese su nombre!
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="apellidoMotorista" class="form-label texto-pequeno">Apellido:</label>
+                    <input type="text" class="form-control form-control-lg color-inputs mb-3" id="apellidoMotorista"
+                        required onkeyup="validarCampoRegistro()">
+                    <div class="valid-feedback">
+                        Completado!
+                    </div>
+                    <div class="invalid-feedback">
+                        Ingrese su apellido!
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="usuarioRegistroMotorista" class="form-label texto-pequeno">Usuario:</label>
+                    <input type="text" class="form-control form-control-lg color-inputs mb-3"
+                        id="usuarioRegistroMotorista" required onkeyup="validarCampoRegistro()">
+                    <div class="valid-feedback">
+                        Completado!
+                    </div>
+                    <div class="invalid-feedback">
+                        Ingrese su usuario!
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="contrasenaRegistroMotorista" class="form-label texto-pequeno">Contrasena:</label>
+                    <input type="password" class="form-control form-control-lg color-inputs mb-3"
+                        id="contrasenaRegistroMotorista" required onkeyup="validarCampoRegistro()">
+                    <div class="valid-feedback">
+                        Completado!
+                    </div>
+                    <div class="invalid-feedback">
+                        Ingrese su contrasena!
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 text-center">
+                <button id="btnSubmitRegistro" type="submit"
+                    class="btn-grande color-secundario-fondo color-texto-blanco mt-4" disabled
+                    onclick="esperarAprobacion()">Registrarse</button>
+            </div>
+        </form>
+
+        <p class="text-center fs-5 px-5 mt-5">¿Ya tienes una cuenta?<br> <span role="button"
+                class="color-secundario-texto" onclick="inicioSesion()">Iniciar sesion</span></p>
+
+    </main>
+
+    <main id="esperaAprobacion" class="mt-5" style="display: none;">
+        <div class="cuerpo">
+            <h1 class="text-center texto-grande">Gracias por Registrarte</h1>
+            <h3 class="text-center texto-mediano mt-4 px-3">Debes esperar a que un administrador te apruebe para iniciar
+            </h3>
+            <div class="text-center">
+                <button class="btn-grande color-secundario-fondo color-texto-blanco mt-4" onclick="location.reload()">Volver al inicio</button>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="js/controlador.js"></script>
+</body>
+
+</html>
