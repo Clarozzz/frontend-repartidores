@@ -1,33 +1,37 @@
 
-var ordenes = [
-    {
-        codigo: 1,
-        nombreCliente: 'Juan',
-        descripcion: 'Lorem ipsum dolor sit amet consectetur adipisicing.',
-        direccion: 'Lorem, ipsum dolor.',
-        cantidad: 1,
-        total: 199,
-        estado: 'En el destino'
-    },
-    {
-        codigo: 2,
-        nombreCliente: 'Maria',
-        descripcion: 'Lorem ipsum dolor sit amet consectetur adipisicing.',
-        direccion: 'Lorem, ipsum dolor.',
-        cantidad: 1,
-        total: 199,
-        estado: 'En camino'
-    },
-    {
-        codigo: 3,
-        nombreCliente: 'Alejandra',
-        descripcion: 'Lorem ipsum dolor sit amet consectetur adipisicing.',
-        direccion: 'Lorem, ipsum dolor.',
-        cantidad: 1,
-        total: 199,
-        estado: 'En el origen'
+var ordenSeleccionada;
+
+async function obtenerOrdenes() {
+    const result = await fetch('http://localhost:5005/ordenes', {
+        method: 'get',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    ordenes = await result.json();
+}
+obtenerOrdenes();
+
+async function abrirRepartidores() {
+    let usuario = document.getElementById('usuarioMotorista').value;
+    let contrasena = document.getElementById('contrasenaMotorista').value;
+
+    const result = await fetch(`http://localhost:5005/repartidores/usuario/${usuario}`, {
+        method: 'get',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    let repartidorBack = await result.json();
+
+    if (usuario == repartidorBack.usuarioRepartidor && contrasena == repartidorBack.contrasenaRepartidor) {
+        entrar();
+    } else {
+        document.getElementById('aviso').innerHTML = 'Usuario o contrasena incorrectos'
     }
-]
+
+}
 
 function entrar() {
     document.getElementById("paginaPrincipalMotoristas").style.display = "none";
@@ -98,9 +102,27 @@ function inicioSesion() {
     document.getElementById('paginaRegistroMotoristas').style.display = 'none';
 }
 
-function esperarAprobacion() {
+async function esperarAprobacion() {
     document.getElementById('paginaRegistroMotoristas').style.display = 'none';
     document.getElementById('esperaAprobacion').style.display = 'block';
+
+    let nombre = document.getElementById('nombreMotorista').value;
+    let apellido = document.getElementById('apellidoMotorista').value;
+    let usuario = document.getElementById('usuarioRegistroMotorista').value;
+    let contrasena = document.getElementById('contrasenaRegistroMotorista').value;
+
+    const result = await fetch('http://localhost:5005/repartidorespendientes', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            nombre: nombre,
+            apellido: apellido,
+            usuario: usuario,
+            contrasena: contrasena
+        })
+    })
 }
 
 function verDisponibles() {
@@ -109,11 +131,11 @@ function verDisponibles() {
     const disponibles = document.getElementById('disponibles');
     disponibles.innerHTML = '';
 
-    ordenes.forEach((orden, indice) => {
-        disponibles.innerHTML += 
-        `
-        <div class="tamano-opcion mt-4 border border-3 rounded-4 p-4 borde-color-primario" onclick="verOrden(${indice})">
-            <h3 class="texto-mediano">Orden ${orden.codigo}</h3>
+    ordenes.forEach((orden) => {
+        disponibles.innerHTML +=
+            `
+        <div class="tamano-opcion mt-4 border border-3 rounded-4 p-4 borde-color-primario" onclick="verOrden('${orden._id}')">
+            <h3 class="texto-mediano">Orden ${orden.idOrden}</h3>
             <p>${orden.descripcion}</p>
             <p>${orden.direccion}</p>
         </div>
@@ -121,19 +143,25 @@ function verDisponibles() {
     })
 }
 
-function verOrden(indice) {
+async function verOrden(idOrden) {
     document.getElementById('ordenesDisponibles').style.display = 'none';
     document.getElementById('verOrden').style.display = 'block';
-    const orden = ordenes[indice]
 
-    document.getElementById('orden').innerHTML = 
-    `
-    <h1 class="text-center texto-grande">Orden ${orden.codigo}</h1>
-    <h3 class="texto-mediano mt-5">${orden.nombreCliente}</h3>
-    <p class="mt-4 fs-5"><strong>Descripcion: </strong>${orden.descripcion}</p>
-    <p class="fs-5"><strong>Direccion: </strong>${orden.direccion}</p>
-    <p class="fs-5"><strong>Cantidad: </strong>${orden.cantidad}</p>
-    <p class="fs-5"><strong>Total: </strong>lps. ${orden.total}</p>
+    const result = await fetch(`http://localhost:5005/ordenes/${idOrden}`, {
+        method: 'get',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    ordenSeleccionada = await result.json();
+
+    document.getElementById('orden').innerHTML =
+        `
+    <h1 class="text-center texto-grande">Orden ${ordenSeleccionada.idOrden}</h1>
+    <h3 class="texto-mediano mt-5">${ordenSeleccionada.nombreCliente}</h3>
+    <p class="mt-4 fs-5"><strong>Descripcion: </strong>${ordenSeleccionada.descripcion}</p>
+    <p class="fs-5"><strong>Direccion: </strong>${ordenSeleccionada.direccion}</p>
+    <p class="fs-5"><strong>Total: </strong>lps. ${ordenSeleccionada.total}</p>
     `
 }
 
@@ -144,8 +172,8 @@ function verTomadas() {
     tomadas.innerHTML = '';
 
     ordenes.forEach((orden, indice) => {
-        tomadas.innerHTML += 
-        `
+        tomadas.innerHTML +=
+            `
         <div class="tamano-opcion mt-4 border border-3 rounded-4 p-2 borde-color-primario" onclick="verOrdenTomada(${indice})">
             <h3 class="texto-mediano">Orden ${orden.codigo}</h3>
             <p>${orden.descripcion}</p>
@@ -161,8 +189,8 @@ function verOrdenTomada(indice) {
     document.getElementById('verOrdenTomada').style.display = 'block';
     const orden = ordenes[indice]
 
-    document.getElementById('ordenTomada').innerHTML = 
-    `
+    document.getElementById('ordenTomada').innerHTML =
+        `
     <h1 class="text-center texto-grande">Orden ${orden.codigo}</h1>
     <h3 class="texto-mediano mt-5">${orden.nombreCliente}</h3>
     <p class="mt-4 fs-5"><strong>Descripcion: </strong>${orden.descripcion}</p>
@@ -181,11 +209,11 @@ function establecerEstado(nombre, estado) {
         case 'Tomada':
             radios[0].checked = true;
             break;
-    
+
         case 'En camino':
             radios[1].checked = true;
             break;
-        
+
         case 'En el origen':
             radios[2].checked = true;
             break;
@@ -234,8 +262,8 @@ function verEntregadas() {
     entregadas.innerHTML = '';
 
     ordenes.forEach((orden, indice) => {
-        entregadas.innerHTML += 
-        `
+        entregadas.innerHTML +=
+            `
         <div class="tamano-opcion mt-4 border border-3 rounded-4 p-4 borde-color-primario" onclick="verOrdenEntregada(${indice})">
             <h3 class="texto-mediano">Orden ${orden.codigo}</h3>
             <p>${orden.descripcion}</p>
@@ -250,8 +278,8 @@ function verOrdenEntregada(indice) {
     document.getElementById('verOrdenEntregada').style.display = 'block';
     const orden = ordenes[indice]
 
-    document.getElementById('ordenEntregada').innerHTML = 
-    `
+    document.getElementById('ordenEntregada').innerHTML =
+        `
     <h1 class="text-center texto-grande">Orden ${orden.codigo}</h1>
     <h3 class="texto-mediano mt-5">${orden.nombreCliente}</h3>
     <p class="mt-4 fs-5"><strong>Descripcion: </strong>${orden.descripcion}</p>
