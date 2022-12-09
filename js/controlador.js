@@ -1,5 +1,8 @@
 
 var ordenSeleccionada;
+var repartidorSeleccionado;
+var ordenTomada;
+var indiceOrdenTomada;
 
 async function obtenerOrdenes() {
     const result = await fetch('http://localhost:5005/ordenes', {
@@ -17,20 +20,27 @@ async function abrirRepartidores() {
     let usuario = document.getElementById('usuarioMotorista').value;
     let contrasena = document.getElementById('contrasenaMotorista').value;
 
+
+    let repartidorBack = await obtenerRepartidor(usuario);
+
+    if (usuario == repartidorBack.usuarioRepartidor && contrasena == repartidorBack.contrasenaRepartidor) {
+        repartidorSeleccionado = repartidorBack;
+        entrar();
+    } else {
+        document.getElementById('aviso').innerHTML = 'Usuario o contrasena incorrectos'
+    }
+
+}
+
+async function obtenerRepartidor(usuario) {
     const result = await fetch(`http://localhost:5005/repartidores/usuario/${usuario}`, {
         method: 'get',
         headers: {
             'Content-Type': 'application/json'
         }
     });
-    let repartidorBack = await result.json();
 
-    if (usuario == repartidorBack.usuarioRepartidor && contrasena == repartidorBack.contrasenaRepartidor) {
-        entrar();
-    } else {
-        document.getElementById('aviso').innerHTML = 'Usuario o contrasena incorrectos'
-    }
-
+    return result.json();
 }
 
 function entrar() {
@@ -128,6 +138,7 @@ async function esperarAprobacion() {
 function verDisponibles() {
     document.getElementById('tipoDeOrdenes').style.display = 'none';
     document.getElementById('ordenesDisponibles').style.display = 'block';
+    document.getElementById('verOrden').style.display = 'none';
     const disponibles = document.getElementById('disponibles');
     disponibles.innerHTML = '';
 
@@ -165,17 +176,51 @@ async function verOrden(idOrden) {
     `
 }
 
+async function tomarOrden() {
+
+    ordenSeleccionada.estado = 'Tomada';
+    repartidorSeleccionado.ordenesTomadas.push(ordenSeleccionada);
+
+    const resultado = await fetch(`http://localhost:5005/ordenes/${ordenSeleccionada._id}`, {
+        method: 'delete',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+
+    const result = await fetch(`http://localhost:5005/repartidores/${repartidorSeleccionado._id}`, {
+        method: 'put',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            idRepartidor: repartidorSeleccionado.idRepartidor,
+            nombreRepartidor: repartidorSeleccionado.nombreRepartidor,
+            apellidoRepartidor: repartidorSeleccionado.apellidoRepartidor,
+            usuarioRepartidor: repartidorSeleccionado.usuarioRepartidor,
+            contrasenaRepartidor: repartidorSeleccionado.contrasenaRepartidor,
+            ordenesTomadas: repartidorSeleccionado.ordenesTomadas,
+            ordenesEntregadas: repartidorSeleccionado.ordenesEntregadas
+        })
+    })
+
+    repartidorSeleccionado = await obtenerRepartidor(repartidorSeleccionado.usuarioRepartidor);
+    obtenerOrdenes().then(() => {
+        verDisponibles();
+    })
+}
+
 function verTomadas() {
     document.getElementById('tipoDeOrdenes').style.display = 'none';
     document.getElementById('ordenesTomadas').style.display = 'block';
     const tomadas = document.getElementById('tomadas')
     tomadas.innerHTML = '';
 
-    ordenes.forEach((orden, indice) => {
+    repartidorSeleccionado.ordenesTomadas.forEach((orden, indice) => {
         tomadas.innerHTML +=
             `
         <div class="tamano-opcion mt-4 border border-3 rounded-4 p-2 borde-color-primario" onclick="verOrdenTomada(${indice})">
-            <h3 class="texto-mediano">Orden ${orden.codigo}</h3>
+            <h3 class="texto-mediano">Orden ${orden.idOrden}</h3>
             <p>${orden.descripcion}</p>
             <p>${orden.direccion}</p>
             <p>Estado: ${orden.estado}</p>
@@ -187,19 +232,19 @@ function verTomadas() {
 function verOrdenTomada(indice) {
     document.getElementById('ordenesTomadas').style.display = 'none';
     document.getElementById('verOrdenTomada').style.display = 'block';
-    const orden = ordenes[indice]
+    ordenTomada = repartidorSeleccionado.ordenesTomadas[indice];
+    indiceOrdenTomada = indice;
 
     document.getElementById('ordenTomada').innerHTML =
         `
-    <h1 class="text-center texto-grande">Orden ${orden.codigo}</h1>
-    <h3 class="texto-mediano mt-5">${orden.nombreCliente}</h3>
-    <p class="mt-4 fs-5"><strong>Descripcion: </strong>${orden.descripcion}</p>
-    <p class="fs-5"><strong>Direccion: </strong>${orden.direccion}</p>
-    <p class="fs-5"><strong>Cantidad: </strong>${orden.cantidad}</p>
-    <p class="fs-5"><strong>Total: </strong>lps. ${orden.total}</p>
+    <h1 class="text-center texto-grande">Orden ${ordenTomada.idOrden}</h1>
+    <h3 class="texto-mediano mt-5">${ordenTomada.nombreCliente}</h3>
+    <p class="mt-4 fs-5"><strong>Descripcion: </strong>${ordenTomada.descripcion}</p>
+    <p class="fs-5"><strong>Direccion: </strong>${ordenTomada.direccion}</p>
+    <p class="fs-5"><strong>Total: </strong>lps. ${ordenTomada.total}</p>
     `
 
-    establecerEstado('estado', orden.estado);
+    establecerEstado('estado', ordenTomada.estado);
 }
 
 function establecerEstado(nombre, estado) {
@@ -208,24 +253,63 @@ function establecerEstado(nombre, estado) {
     switch (estado) {
         case 'Tomada':
             radios[0].checked = true;
+            ordenTomada.estado = 'Tomada';
             break;
 
         case 'En camino':
             radios[1].checked = true;
+            ordenTomada.estado = 'En camino';
             break;
 
         case 'En el origen':
             radios[2].checked = true;
+            ordenTomada.estado = 'En el origen';
             break;
 
         case 'En el destino':
             radios[3].checked = true;
+            ordenTomada.estado = 'En el destino';
             break;
 
         default:
             console.log('No valido')
             break;
     }
+}
+
+async function definirEstado() {
+    let radio1 = document.getElementById('estado1').checked;
+    let radio2 = document.getElementById('estado2').checked;
+    let radio3 = document.getElementById('estado3').checked;
+    let radio4 = document.getElementById('estado4').checked;
+
+    if (radio1 == true) {
+        repartidorSeleccionado.ordenesTomadas[indiceOrdenTomada].estado = 'Tomada';
+    } else if (radio2 == true) {
+        repartidorSeleccionado.ordenesTomadas[indiceOrdenTomada].estado = 'En camino';
+    } else if (radio3 == true) {
+        repartidorSeleccionado.ordenesTomadas[indiceOrdenTomada].estado = 'En el origen';
+    } else if (radio4 == true) {
+        repartidorSeleccionado.ordenesTomadas[indiceOrdenTomada].estado = 'En el destino';
+    }
+
+    const result = await fetch(`http://localhost:5005/repartidores/${repartidorSeleccionado._id}`, {
+        method: 'put',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            idRepartidor: repartidorSeleccionado.idRepartidor,
+            nombreRepartidor: repartidorSeleccionado.nombreRepartidor,
+            apellidoRepartidor: repartidorSeleccionado.apellidoRepartidor,
+            usuarioRepartidor: repartidorSeleccionado.usuarioRepartidor,
+            contrasenaRepartidor: repartidorSeleccionado.contrasenaRepartidor,
+            ordenesTomadas: repartidorSeleccionado.ordenesTomadas,
+            ordenesEntregadas: repartidorSeleccionado.ordenesEntregadas
+        })
+    })
+
+    repartidorSeleccionado = await obtenerRepartidor(repartidorSeleccionado.usuarioRepartidor);
 }
 
 function regresarAPrincipal() {
@@ -243,16 +327,76 @@ function regresarADisponibles() {
 function regresarATomadas() {
     document.getElementById('ordenesTomadas').style.display = 'block';
     document.getElementById('verOrdenTomada').style.display = 'none';
-}
-
-function regresarAOrdenTomada() {
-    document.getElementById('verOrdenTomada').style.display = 'block';
     document.getElementById('factura').style.display = 'none';
+    verTomadas();
 }
 
-function verFacturaTomada() {
+async function verFacturaTomada() {
     document.getElementById('verOrdenTomada').style.display = 'none';
     document.getElementById('factura').style.display = 'block';
+
+    document.getElementById('facturaOrden').innerHTML =
+        `
+    <div class="fs-5 mt-4">
+                <strong>Tipo de pago: </strong>
+                <p class="float-end m-0">Pago con tarjeta</p>
+            </div>
+
+            <div class="fs-5 mt-3">
+                <strong>Subtotal: </strong>
+                <p class="float-end m-0">lps. ${parseFloat(ordenTomada.total * 0.5).toFixed(2)}</p>
+            </div>
+
+            <div class="fs-5 mt-3">
+                <strong>Impuesto: </strong>
+                <p class="float-end m-0">lps. ${parseFloat(ordenTomada.total * 0.2).toFixed(2)}</p>
+            </div>
+
+            <div class="fs-5 mt-3">
+                <strong>Comision total: </strong>
+                <p class="float-end m-0">lps. ${parseFloat(ordenTomada.total * 0.3).toFixed(2)}</p>
+            </div>
+
+            <div class="fs-5 mt-3">
+                <strong>Comision motorista: </strong>
+                <p class="float-end m-0">lps. ${parseFloat((ordenTomada.total * 0.3) * 0.5).toFixed(2)}</p>
+            </div>
+
+            <div class="fs-5 mt-3">
+                <strong>Comision admin: </strong>
+                <p class="float-end m-0">lps. ${parseFloat((ordenTomada.total * 0.3) * 0.5).toFixed(2)}</p>
+            </div>
+
+            <div class="fs-1 mt-5">
+                <strong>Total: </strong>
+                <p class="float-end m-0">lps. ${ordenTomada.total}</p>
+            </div>
+    `
+
+    ordenTomada.estado = 'Entregada'
+    repartidorSeleccionado.ordenesEntregadas.push(ordenTomada);
+    let index = repartidorSeleccionado.ordenesTomadas.indexOf(ordenTomada)
+    if (index > -1) {
+        repartidorSeleccionado.ordenesTomadas.splice(index, 1);
+    }
+
+    const result = await fetch(`http://localhost:5005/repartidores/${repartidorSeleccionado._id}`, {
+        method: 'put',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            idRepartidor: repartidorSeleccionado.idRepartidor,
+            nombreRepartidor: repartidorSeleccionado.nombreRepartidor,
+            apellidoRepartidor: repartidorSeleccionado.apellidoRepartidor,
+            usuarioRepartidor: repartidorSeleccionado.usuarioRepartidor,
+            contrasenaRepartidor: repartidorSeleccionado.contrasenaRepartidor,
+            ordenesTomadas: repartidorSeleccionado.ordenesTomadas,
+            ordenesEntregadas: repartidorSeleccionado.ordenesEntregadas
+        })
+    })
+
+    repartidorSeleccionado = await obtenerRepartidor(repartidorSeleccionado.usuarioRepartidor);
 }
 
 function verEntregadas() {
@@ -261,11 +405,11 @@ function verEntregadas() {
     const entregadas = document.getElementById('entregadas');
     entregadas.innerHTML = '';
 
-    ordenes.forEach((orden, indice) => {
+    repartidorSeleccionado.ordenesEntregadas.forEach((orden, indice) => {
         entregadas.innerHTML +=
             `
         <div class="tamano-opcion mt-4 border border-3 rounded-4 p-4 borde-color-primario" onclick="verOrdenEntregada(${indice})">
-            <h3 class="texto-mediano">Orden ${orden.codigo}</h3>
+            <h3 class="texto-mediano">Orden ${orden.idOrden}</h3>
             <p>${orden.descripcion}</p>
             <p>${orden.direccion}</p>
         </div>
@@ -276,15 +420,14 @@ function verEntregadas() {
 function verOrdenEntregada(indice) {
     document.getElementById('ordenesEntregadas').style.display = 'none';
     document.getElementById('verOrdenEntregada').style.display = 'block';
-    const orden = ordenes[indice]
+    const orden = repartidorSeleccionado.ordenesEntregadas[indice]
 
     document.getElementById('ordenEntregada').innerHTML =
         `
-    <h1 class="text-center texto-grande">Orden ${orden.codigo}</h1>
+    <h1 class="text-center texto-grande">Orden ${orden.idOrden}</h1>
     <h3 class="texto-mediano mt-5">${orden.nombreCliente}</h3>
     <p class="mt-4 fs-5"><strong>Descripcion: </strong>${orden.descripcion}</p>
     <p class="fs-5"><strong>Direccion: </strong>${orden.direccion}</p>
-    <p class="fs-5"><strong>Cantidad: </strong>${orden.cantidad}</p>
     <p class="fs-5"><strong>Total: </strong>lps. ${orden.total}</p>
     `
 }
@@ -293,23 +436,3 @@ function regresarAEntregadas() {
     document.getElementById('ordenesEntregadas').style.display = 'block';
     document.getElementById('verOrdenEntregada').style.display = 'none';
 }
-
-// Example starter JavaScript for disabling form submissions if there are invalid fields
-(() => {
-    'use strict'
-
-    // Fetch all the forms we want to apply custom Bootstrap validation styles to
-    const forms = document.querySelectorAll('.needs-validation')
-
-    // Loop over them and prevent submission
-    Array.from(forms).forEach(form => {
-        form.addEventListener('submit', event => {
-            if (!form.checkValidity()) {
-                event.preventDefault()
-                event.stopPropagation()
-            }
-
-            form.classList.add('was-validated')
-        }, false)
-    })
-})()

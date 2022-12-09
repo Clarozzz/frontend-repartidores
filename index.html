@@ -159,7 +159,7 @@
         </div>
 
         <div class="text-center my-5">
-            <button class="btn-grande color-secundario-fondo color-texto-blanco">
+            <button class="btn-grande color-secundario-fondo color-texto-blanco" onclick="tomarOrden()">
                 Tomar orden
             </button>
         </div>
@@ -210,51 +210,23 @@
         </div>
 
         <div class="text-center my-4">
-            <button class="btn-grande color-secundario-fondo color-texto-blanco" onclick="verFacturaTomada()">
+            <button class="btn color-secundario-fondo color-texto-blanco" onclick="definirEstado()">
+                Establecer estado
+            </button>
+        </div>
+        <div class="text-center my-4">
+            <button class="btn-grande btn btn-success" onclick="verFacturaTomada()">
                 Entregar orden
             </button>
         </div>
     </main>
 
     <main id="factura" class="my-4" style="display: none;">
-        <i role="button" class="fa-solid fa-arrow-left ms-4 texto-mediano" onclick="regresarAOrdenTomada()"></i>
+        <i role="button" class="fa-solid fa-arrow-left ms-4 texto-mediano" onclick="regresarATomadas()"></i>
         <h1 class="text-center texto-grande">Factura</h1>
 
-        <div class="px-4">
-            <div class="fs-5 mt-4">
-                <strong>Tipo de pago: </strong>
-                <p class="float-end m-0">pago con tarjeta</p>
-            </div>
-
-            <div class="fs-5 mt-3">
-                <strong>Subtotal: </strong>
-                <p class="float-end m-0">lps. 145</p>
-            </div>
-
-            <div class="fs-5 mt-3">
-                <strong>Impuesto: </strong>
-                <p class="float-end m-0">lps. 30</p>
-            </div>
-
-            <div class="fs-5 mt-3">
-                <strong>Comision total: </strong>
-                <p class="float-end m-0">lps. 24</p>
-            </div>
-
-            <div class="fs-5 mt-3">
-                <strong>Comision motorista: </strong>
-                <p class="float-end m-0">lps. 10</p>
-            </div>
-
-            <div class="fs-5 mt-3">
-                <strong>Comision administracion: </strong>
-                <p class="float-end m-0">lps. 14</p>
-            </div>
-
-            <div class="fs-1 mt-5">
-                <strong>Total: </strong>
-                <p class="float-end m-0">lps. 199</p>
-            </div>
+        <div id="facturaOrden" class="px-4">
+            
         </div>
     </main>
 
