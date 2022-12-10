@@ -3,6 +3,7 @@ var ordenSeleccionada;
 var repartidorSeleccionado;
 var ordenTomada;
 var indiceOrdenTomada;
+var ordenes;
 
 async function obtenerOrdenes() {
     const result = await fetch('http://localhost:5005/ordenes', {
